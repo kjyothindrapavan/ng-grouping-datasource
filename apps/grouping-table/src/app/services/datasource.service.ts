@@ -3,18 +3,10 @@ import { IGroupingItem, IGroupingTableConfig } from "../interfaces/grouping-tabl
 import { BehaviorSubject, Observable } from "rxjs";
 
 export class GroupingDataSource<T extends IGroupingItem<Record<string, any>>> extends MatTableDataSource<T> {
-    private data!: Observable<T[]>;
+    // private data!: Observable<T[]>;
     private defaultKey!: string;
     constructor(config: IGroupingTableConfig) {
         super();
         const data = config.dataProvider();
-    }
-
-    override connect(): BehaviorSubject<T[]> {
-        
-    }
-
-    groupByKey(key: string) {
-
     }
 }

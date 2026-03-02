@@ -1,0 +1,18 @@
+.group-header-button {
+  border: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.group-toggle-icon {
+  transition: transform 0.5s;
+}
+
+.group-closed {
+  transform: rotate(-90deg);
+}
+
+.display-none {
+  display: none !important;
+}

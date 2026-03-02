@@ -1,0 +1,47 @@
+<!-- <table mat-table [dataSource]="dataSource">
+    <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let row">
+            {{row.name}}
+        </td>
+    </ng-container>
+    <ng-container matColumnDef="deduplicateInd">
+        <th mat-header-cell *matHeaderCellDef>Deduplicate</th>
+        <td mat-cell *matCellDef="let row">
+            <input type="checkbox" name="deduplicateInd" [checked]="row.deduplicateInd" />
+        </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['name','deduplicateInd']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['name', 'deduplicateInd']"></tr>
+</table> -->
+
+<table mat-table [dataSource]="dataSource">
+    <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let row">
+            @let data = asDataRow(row);
+            {{data.data.name}}
+        </td>
+    </ng-container>
+    <ng-container matColumnDef="deduplicateInd">
+        <th mat-header-cell *matHeaderCellDef>Deduplicate</th>
+        <td mat-cell *matCellDef="let row">
+            @let data = asDataRow(row);
+            <input type="checkbox" name="deduplicateInd" [checked]="data.data.deduplicateInd"  />
+        </td>
+    </ng-container>
+    <ng-container matColumnDef="groupingrow">
+        <td colspan="2" mat-cell *matCellDef="let row">
+            @let group = asGroupRow(row);
+            <button matIconButton class="group-header-button" (click)="onGroupToggle(group.groupKey)">
+                <mat-icon class="group-toggle-icon" [class.group-closed]="!isGroupExpanded(group.groupKey)">keyboard_arrow_down</mat-icon>
+                {{group.groupValue}}
+            </button>
+        </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['name','deduplicateInd']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['groupingrow']; when: isGroupRow"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['name','deduplicateInd']; when: isDataRow" [@rowExpand]="getRowAnimState(row)"></tr>
+</table>
