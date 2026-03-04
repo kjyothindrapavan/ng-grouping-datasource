@@ -16,3 +16,58 @@
 .display-none {
   display: none !important;
 }
+
+tr {
+  // transition: visibility 0.2s ease-in;
+}
+
+.invisible, .invisible .mat-mdc-cell {
+    // box-sizing: border-box !important;
+    // height: 0 !important;
+    // max-height: 0 !important;
+    // width: 0 !important;
+    // overflow: hidden !important; 
+    // margin: 0 !important;
+    // transform: scale(0);
+    visibility: collapse;
+    // opacity: 0;
+}
+
+/* Hide arrows in Chrome, Safari, Edge, Opera */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+/* Hide arrows in Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Show arrows when active/focused */
+input[type=number]:active::-webkit-inner-spin-button,
+input[type=number]:active::-webkit-outer-spin-button,
+input[type=number]:focus::-webkit-inner-spin-button,
+input[type=number]:focus::-webkit-outer-spin-button {
+  -webkit-appearance: auto;
+  margin: 0;
+  border: .5px solid #ddd;
+}
+
+input[type=number]:active,
+input[type=number]:focus {
+  -moz-appearance: number-input;
+  border: .5px solid #ddd;
+}
+input[type='number'] {
+  width: 48px;
+  border: none;
+}
+
+input[type='number']:hover {
+  width: 48px;
+  border: .5px solid #ddd;
+}
+
+

@@ -19,7 +19,7 @@
 <table mat-table [dataSource]="dataSource">
     <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let row">
+        <td mat-cell *matCellDef="let row" >
             @let data = asDataRow(row);
             {{data.data.name}}
         </td>
@@ -35,13 +35,20 @@
         <td colspan="2" mat-cell *matCellDef="let row">
             @let group = asGroupRow(row);
             <button matIconButton class="group-header-button" (click)="onGroupToggle(group.groupKey)">
-                <mat-icon class="group-toggle-icon" [class.group-closed]="!isGroupExpanded(group.groupKey)">keyboard_arrow_down</mat-icon>
+                <mat-icon class="group-toggle-icon">{{isGroupExpanded(group.groupKey) ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</mat-icon>
                 {{group.groupValue}}
             </button>
         </td>
     </ng-container>
+    <ng-container matColumnDef="sequence">
+        <th mat-header-cell *matHeaderCellDef>Sequence</th>
+        <td mat-cell *matCellDef="let row">
+            @let data = asDataRow(row);
+            <input class="sequnce-input" type="number" step="1" min="1" [value]="data.data.deduplicateOrd" (change)="onSequenceChange(data, $event)"/>
+        </td>
+    </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="['name','deduplicateInd']"></tr>
+    <tr mat-header-row *matHeaderRowDef="['name','deduplicateInd', 'sequence']"></tr>
     <tr mat-row *matRowDef="let row; columns: ['groupingrow']; when: isGroupRow"></tr>
-    <tr mat-row *matRowDef="let row; columns: ['name','deduplicateInd']; when: isDataRow" [@rowExpand]="getRowAnimState(row)"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['name','deduplicateInd' , 'sequence']; when: isDataRow" [class.invisible]="!isGroupExpanded(row.groupKey)"></tr>
 </table>

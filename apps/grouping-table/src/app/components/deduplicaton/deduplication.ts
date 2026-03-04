@@ -1,34 +1,33 @@
-import { Component, inject } from '@angular/core';
-import { MatTableModule } from '@angular/material/table';
+import { Component, computed, effect, inject } from '@angular/core';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { LOGICAL_SEGMENTS } from './data';
 import { GroupingRow, IGroupingGroup, isGroupRow, isDataRow, IGroupHeaderRow, IDataRow } from './deduplication.interface';
 import { DeduplicationService } from './deduplication.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { trigger, state, style, transition, animate } from '@angular/animations';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-deduplication',
   imports: [MatTableModule, MatIconModule, MatButtonModule],
   templateUrl: './deduplication.html',
   styleUrl: './deduplication.scss',
-  animations: [
-    trigger('rowExpand', [
-      state('collapsed', style({ display: 'none'})),
-      state('expanded', style({ display: 'block'})),
-      transition('expanded <=> collapsed', animate('1000ms ease')),
-    ]),
-  ],
 })
 export class Deduplication {
   deduplicationService = inject(DeduplicationService);
-  dataSource!: GroupingRow[];
-  groups!: IGroupingGroup[];
+  dataSource = new MatTableDataSource<GroupingRow>([]);
+  groups = this.deduplicationService.groupsSignal;
+  data = LOGICAL_SEGMENTS;
 
   constructor() {
     this.deduplicationService.data = LOGICAL_SEGMENTS;
-    this.updateTableData();
+
+    effect(() => {
+      this.dataSource.data = [...this.deduplicationService.tableDataSignal()];
+    });
   }
+
+
 
   protected asGroupRow(row: GroupingRow): IGroupHeaderRow { return row as IGroupHeaderRow; }
   protected asDataRow(row: GroupingRow): IDataRow { return row as IDataRow; }
@@ -37,22 +36,48 @@ export class Deduplication {
   protected readonly isDataRow = isDataRow;
 
   onGroupToggle(groupKey: string) {
-    this.deduplicationService.onToggle(groupKey);
+    this.deduplicationService.toggleGroupExpanded(groupKey);
   }
 
   isGroupExpanded(groupKey: string): boolean {
     return this.deduplicationService.isGroupExpanded(groupKey);
   }
 
-  getRowAnimState(row: GroupingRow): 'expanded' | 'collapsed' {
-    return this.deduplicationService.isGroupExpanded(this.asDataRow(row).groupKey)
-      ? 'expanded'
-      : 'collapsed';
+  onSequenceChange(row: IDataRow, event: Event) {
+    const target = event.target as HTMLInputElement;
+    const value = target.value;
+    const numValue = parseInt(value);
+    if(isNaN(numValue) || row.data.deduplicateOrd === numValue) {
+      target.value = row.data.deduplicateOrd?.toString() || '';
+      return;
+    }
+    const isSuccess = this.updateSequence(row, numValue);
+    if(!isSuccess) {
+      target.value = row.data.deduplicateOrd?.toString() || '';
+    }
   }
 
-  private updateTableData() {
-    const { rows, groups } = this.deduplicationService.buildFlatRows();
-    this.dataSource = rows;
-    this.groups = groups;
+     findGroup(groupKey: string): IGroupingGroup | undefined {
+        return this.groups().find((group) => group.groupKey === groupKey);
+    }
+
+  private updateSequence(row: IDataRow, newIndex: number) {
+    const group = this.findGroup(row.groupKey);
+    if(!group) return false;
+    if(newIndex < 1 || newIndex > group.items?.length) {
+        return false;
+    }
+    const segment = row.data;
+    const currentIndex = group.items.findIndex((item) => item === segment);
+    if(currentIndex === -1) return false;
+
+    const spliced = group.items.splice(currentIndex,1);
+    group.items.splice(newIndex-1,0, spliced[0]);
+    group.items.forEach((segment, index) => {
+      segment.deduplicateOrd = index + 1;
+    });
+
+    this.deduplicationService.reGroup();
+    return true;
   }
 }

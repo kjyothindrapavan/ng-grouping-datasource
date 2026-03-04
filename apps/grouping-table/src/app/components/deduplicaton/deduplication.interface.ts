@@ -31,15 +31,15 @@ export function isDataRow(_index: number, row: GroupingRow) {
 
 
 export interface ILogicalSegmentDTO {
-    name?: string | null;
-    deduplicateInd?: boolean | null;
-    deduplicateOrd?: number | null;
-    displayOrd?: number | null;
-    logicalSegmentId?: string | null;
-    segmentPlanId?: string | null;
-    segmentRoleCd?: number | null;
-    hasSplits?: number | null;
-    logicalMandatoryRoleInd?: boolean | null;
+    name?: string;
+    deduplicateInd?: boolean;
+    deduplicateOrd?: number;
+    displayOrd?: number;
+    logicalSegmentId?: string;
+    segmentPlanId?: string;
+    segmentRoleCd?: number;
+    hasSplits?: number;
+    logicalMandatoryRoleInd?: boolean;
 }
 
 // export class LogicalSegmentDTO {
